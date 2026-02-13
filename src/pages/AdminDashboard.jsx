@@ -12,21 +12,35 @@ const ZONES = [
   "Outra cidade / Interior",
 ];
 
+// Formata data para BR
 function toBRDate(iso) {
-  if (!iso) return "";
+  if (!iso) return "-";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const dd = String(d.getDate()).padStart(2, "0");
+  if (Number.isNaN(d.getTime())) return "-";
+  const dd = String(d.getDate() + 1).padStart(2, "0"); // Ajuste de fuso simples
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
+}
+
+// Calcula idade
+function getAge(iso) {
+  if (!iso) return "";
+  const birth = new Date(iso);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return `${age} anos`;
 }
 
 function monthDay(iso) {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return `${String(d.getDate() + 1).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function downloadCSV(filename, rows) {
@@ -87,8 +101,6 @@ export default function AdminDashboard() {
 
   // Modais
   const [selectedPersonId, setSelectedPersonId] = useState(null);
-  
-  // Estado para abrir modal de grupo (Zona, Célula ou Ministério)
   const [selectedGroup, setSelectedGroup] = useState(null); 
 
   // Inputs Config
@@ -399,18 +411,109 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* MODAL PESSOA INDIVIDUAL - COM OS BOTÕES DE VOLTA! */}
+      {/* ============================================= */}
+      {/* MODAL PESSOA INDIVIDUAL - ATUALIZADO COMPLETO */}
+      {/* ============================================= */}
       {selectedPerson && (
         <div className="modalBackdrop" onClick={() => setSelectedPersonId(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modalHead"><div><div className="modalTitle">{selectedPerson.name}</div><div className="modalSub">{selectedPerson.phone}</div></div><button className="ghostBtn" onClick={() => setSelectedPersonId(null)}>Fechar</button></div>
-            <div className="modalGrid">
-               <div className="modalBox"><div className="modalLabel">Célula</div><div className="modalValue">{cellByPerson[selectedPerson.id] ? (byIdCell[cellByPerson[selectedPerson.id]]?.name || "-") : "-"}</div></div>
-               <div className="modalBox"><div className="modalLabel">Ministérios</div><div className="modalValue">{(ministriesByPerson[selectedPerson.id] || []).map(id => byIdMinistry[id]?.name).join(", ") || "-"}</div></div>
+            <div className="modalHead">
+              <div>
+                <div className="modalTitle">{selectedPerson.name}</div>
+                <div className="modalSub">{selectedPerson.phone} • {selectedPerson.zone}</div>
+              </div>
+              <button className="ghostBtn" onClick={() => setSelectedPersonId(null)}>Fechar</button>
             </div>
-            <div className="modalAddress"><div className="modalLabel">Endereço</div><div className="modalValue">{selectedPerson.street ? `${selectedPerson.street}, ${selectedPerson.house_number} - ${selectedPerson.neighborhood}` : "Sem endereço"}</div></div>
             
-            {/* AQUI ESTÃO ELES DE VOLTA 👇 */}
+            <div className="modalGrid">
+              {/* BLOCO 1: DADOS BÁSICOS */}
+              <div className="modalBox">
+                <div className="modalLabel">Nascimento</div>
+                <div className="modalValue">
+                  {toBRDate(selectedPerson.birth_date)} <small style={{color:'#888', marginLeft:5}}>({getAge(selectedPerson.birth_date)})</small>
+                </div>
+              </div>
+
+              {/* BLOCO 2: BATISMO */}
+              <div className="modalBox">
+                <div className="modalLabel">Situação Batismo</div>
+                <div className="modalValue">
+                  {selectedPerson.baptized ? (
+                    <span style={{color:'#4caf50'}}>✅ É batizado</span>
+                  ) : (
+                    <>
+                      <span style={{color:'#ccc'}}>Não batizado</span>
+                      {selectedPerson.baptism_contact && (
+                        <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Quer conversar sobre batismo</div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+               {/* BLOCO 3: CÉLULA */}
+              <div className="modalBox">
+                <div className="modalLabel">Célula</div>
+                <div className="modalValue">
+                  {cellByPerson[selectedPerson.id] ? (
+                    <span style={{color:'#fff'}}>{byIdCell[cellByPerson[selectedPerson.id]]?.name || "-"}</span>
+                  ) : (
+                    <>
+                      <span style={{color:'#888'}}>Não participa.</span>
+                      {selectedPerson.wants_cell && (
+                         <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Deseja participar de uma!</div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* BLOCO 4: MINISTÉRIOS */}
+              <div className="modalBox">
+                <div className="modalLabel">Ministérios</div>
+                <div className="modalValue">
+                  {(ministriesByPerson[selectedPerson.id] || []).length > 0 ? (
+                    <div style={{lineHeight: '1.4'}}>
+                      {(ministriesByPerson[selectedPerson.id] || []).map(id => byIdMinistry[id]?.name).join(", ")}
+                    </div>
+                  ) : (
+                    <>
+                      <span style={{color:'#888'}}>Não serve.</span>
+                      {selectedPerson.wants_ministry && (
+                         <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Deseja servir!</div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ENDEREÇO E VISITA */}
+            <div className="modalAddress">
+              <div style={{display:'flex', justifyContent:'space-between', marginBottom:8}}>
+                <div className="modalLabel">Endereço Completo</div>
+                {selectedPerson.wants_visit ? (
+                  <div style={{background:'rgba(191,126,30,0.3)', color:'#eba036', padding:'2px 8px', borderRadius:4, fontSize:'0.75rem', fontWeight:'bold'}}>
+                    QUER VISITA
+                  </div>
+                ) : (
+                   <div style={{color:'#555', fontSize:'0.75rem'}}>Não solicitou visita</div>
+                )}
+              </div>
+              
+              {selectedPerson.address_opt_in ? (
+                <div className="modalValue">
+                   {selectedPerson.street}, {selectedPerson.house_number}
+                   {selectedPerson.complement && <span> • Comp: {selectedPerson.complement}</span>}
+                   <br/>
+                   {selectedPerson.neighborhood} • {selectedPerson.city}
+                   {selectedPerson.reference && <div style={{marginTop:5, color:'#aaa', fontSize:'0.9em'}}>Ref: {selectedPerson.reference}</div>}
+                </div>
+              ) : (
+                <div className="modalValue" style={{color:'#666'}}>Endereço não cadastrado.</div>
+              )}
+            </div>
+            
             <div className="modalActions">
               <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBirthdayMessage(selectedPerson.name))}>
                 🎉 Feliz Aniversário
