@@ -1,0 +1,2 @@
+[functions.public-register]
+verify_jwt = false
