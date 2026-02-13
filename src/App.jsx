@@ -9,8 +9,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rota principal (O formulário de cadastro) */}
         <Route path="/" element={<RegisterForm />} />
 
+        {/* Rotas administrativas */}
         <Route path="/admin" element={<AdminLogin />} />
 
         <Route
@@ -22,6 +24,7 @@ export default function App() {
           }
         />
 
+        {/* Redireciona qualquer link errado para a home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

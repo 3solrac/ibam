@@ -1,39 +1,14 @@
-/* =====================
-   RESET / BASE
-   ===================== */
-*{ box-sizing: border-box; }
-html, body { height: 100%; }
-body{
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: #ffffff;
-  color: #111;
+/* App.css - Reset básico que não afeta cores */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+
+body {
+  /* Apenas a fonte global, sem cores de fundo! */
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* O background do dashboard (escuro) deve ser definido no CSS do dashboard */
 }
 
-/* IMPORTANTÍSSIMO:
-   O template do Vite/React costuma colocar max-width e margin auto no #root.
-   Isso é exatamente o “fica no cantinho”. Aqui a gente mata isso. */
-#root{
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  max-width: none;
-}
+#root { width: 100%; min-height: 100vh; }
 
-/* Links e botões */
-a{ color: inherit; }
-button{ font-family: inherit; }
-
-/* Inputs com fonte igual no iOS */
-input, select, textarea, button{
-  font-size: 16px; /* evita zoom no iPhone */
-}
-
-/* =====================
-   HELPERS (opcional)
-   ===================== */
-.full{
-  width: 100%;
-  min-height: 100vh;
-}
+/* Garante que imagens não estourem, mas sem forçar margens ou sombras globais */
+img { display: block; max-width: 100%; height: auto; }
