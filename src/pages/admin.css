@@ -133,3 +133,55 @@
   .grid2{ grid-template-columns: 1fr; }
   .modalGrid{ grid-template-columns: 1fr; }
 }
+
+/* ... tudo que já estava no admin.css ... */
+
+/* ESTILO DA BARRA DE MESES */
+.monthSelector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto; /* Permite rolar pro lado no celular */
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.monthBtn {
+  background: var(--panel2);
+  border: 1px solid var(--stroke);
+  color: var(--muted);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.monthBtn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+.monthBtn.active {
+  background: var(--amber); /* Cor de destaque (Dourado/Bronze) */
+  color: #fff;
+  border-color: var(--amber);
+  box-shadow: 0 4px 12px rgba(191,126,30,0.4);
+}
+
+.monthCount {
+  font-size: 0.85em;
+  background: rgba(0,0,0,0.3);
+  padding: 2px 6px;
+  border-radius: 99px;
+  color: rgba(255,255,255,0.8);
+}
+
+.monthBtn.active .monthCount {
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+}

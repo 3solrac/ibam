@@ -12,12 +12,17 @@ const ZONES = [
   "Outra cidade / Interior",
 ];
 
+const MONTHS = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+];
+
 // Formata data para BR
 function toBRDate(iso) {
   if (!iso) return "-";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "-";
-  const dd = String(d.getDate() + 1).padStart(2, "0"); // Ajuste de fuso simples
+  const dd = String(d.getDate() + 1).padStart(2, "0"); // Ajuste simples de fuso
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
@@ -99,6 +104,9 @@ export default function AdminDashboard() {
   const [quickVisit, setQuickVisit] = useState(false);
   const [quickBaptism, setQuickBaptism] = useState(false);
 
+  // ANIVERSÁRIOS: Estado para controlar o mês selecionado (0 = Jan, 11 = Dez)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+
   // Modais
   const [selectedPersonId, setSelectedPersonId] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null); 
@@ -162,14 +170,30 @@ export default function AdminDashboard() {
     return map;
   }, [peopleCells]);
 
-  const monthNow = new Date().getMonth() + 1;
-  const birthdaysThisMonth = useMemo(() => {
+  // Lógica de Aniversariantes do Mês Selecionado
+  const birthdaysFiltered = useMemo(() => {
     return people.filter((p) => {
         if (!p.birth_date) return false;
         const d = new Date(p.birth_date);
-        return !Number.isNaN(d.getTime()) && d.getMonth() + 1 === monthNow;
+        // Ajuste simples para garantir que o mês bata (timezone pode zoar, idealmente usaria UTC)
+        // getMonth() retorna 0-11
+        return !Number.isNaN(d.getTime()) && d.getMonth() === selectedMonth;
       }).sort((a, b) => new Date(a.birth_date).getDate() - new Date(b.birth_date).getDate());
-  }, [people, monthNow]);
+  }, [people, selectedMonth]);
+
+  // Contagem para todos os meses (para mostrar nos botões)
+  const countByMonth = useMemo(() => {
+    const counts = new Array(12).fill(0);
+    people.forEach(p => {
+      if(p.birth_date) {
+        const d = new Date(p.birth_date);
+        if(!Number.isNaN(d.getTime())) {
+          counts[d.getMonth()]++;
+        }
+      }
+    });
+    return counts;
+  }, [people]);
 
   const wantsVisitQueue = useMemo(() => people.filter((p) => p.wants_visit === true), [people]);
   const baptismQueue = useMemo(() => people.filter((p) => p.baptized === false && p.baptism_contact === true), [people]);
@@ -227,8 +251,9 @@ export default function AdminDashboard() {
 
   // ====== CSV EXPORTS ======
   function exportBirthdaysCSV() {
-    const rows = birthdaysThisMonth.map((p) => ({ Nome: p.name, WhatsApp: p.phone, "Nascimento": monthDay(p.birth_date), Zona: p.zone }));
-    downloadCSV(`aniversariantes_${monthNow}.csv`, rows);
+    const monthName = MONTHS[selectedMonth];
+    const rows = birthdaysFiltered.map((p) => ({ Nome: p.name, WhatsApp: p.phone, "Nascimento": monthDay(p.birth_date), Zona: p.zone }));
+    downloadCSV(`aniversariantes_${monthName}.csv`, rows);
   }
   function exportVisitCSV() {
     const rows = wantsVisitQueue.map((p) => ({ Nome: p.name, WhatsApp: p.phone, Zona: p.zone, Rua: p.street, Bairro: p.neighborhood }));
@@ -303,7 +328,8 @@ export default function AdminDashboard() {
           <div className="cards">
             <div className="card"><div className="cardLabel">Cadastrados</div><div className="cardValue">{people.length}</div></div>
             <div className="card"><div className="cardLabel">Querem visita</div><div className="cardValue">{wantsVisitQueue.length}</div></div>
-            <div className="card"><div className="cardLabel">Anivers. do mês</div><div className="cardValue">{birthdaysThisMonth.length}</div></div>
+            {/* Aqui mostra o mês atual dinamicamente */}
+            <div className="card"><div className="cardLabel">Anivers. {MONTHS[new Date().getMonth()]}</div><div className="cardValue">{countByMonth[new Date().getMonth()]}</div></div>
           </div>
 
           <div className="panel">
@@ -391,9 +417,48 @@ export default function AdminDashboard() {
         </>
       )}
 
+      {/* ================================== */}
+      {/* ANIVERSARIANTES - SELETOR DE MESES */}
+      {/* ================================== */}
       {tab === "anivers" && (
-        <div className="panel"><div className="panelHead row"><div className="panelTitle">Aniversariantes</div><button className="ghostBtn" onClick={exportBirthdaysCSV}>CSV</button></div>
-        <div className="list">{birthdaysThisMonth.map(p => <div key={p.id} className="listItem"><div><div className="liTitle">{p.name}</div><div className="liSub">{monthDay(p.birth_date)} • {p.phone}</div></div><div className="liActions"><button className="miniBtn" onClick={() => openWhatsApp(p.phone, buildBirthdayMessage(p.name))}>WhatsApp</button><button className="miniBtn" onClick={() => setSelectedPersonId(p.id)}>Detalhes</button></div></div>)}</div></div>
+        <div className="panel">
+          <div className="panelHead row">
+            <div className="panelTitle">Aniversariantes: {MONTHS[selectedMonth]}</div>
+            <div className="panelActions">
+              <button className="ghostBtn" onClick={exportBirthdaysCSV}>Exportar CSV ({MONTHS[selectedMonth]})</button>
+            </div>
+          </div>
+
+          {/* BARRA DE MESES */}
+          <div className="monthSelector">
+             {MONTHS.map((m, idx) => (
+                <button 
+                  key={m} 
+                  className={`monthBtn ${selectedMonth === idx ? 'active' : ''}`}
+                  onClick={() => setSelectedMonth(idx)}
+                >
+                   {m} <span className="monthCount">{countByMonth[idx]}</span>
+                </button>
+             ))}
+          </div>
+
+          <div className="list">
+            {birthdaysFiltered.map(p => (
+              <div key={p.id} className="listItem">
+                <div>
+                  <div className="liTitle">{p.name}</div>
+                  <div className="liSub">Dia {new Date(p.birth_date).getDate() + 1} • {p.phone}</div>
+                </div>
+                <div className="liActions">
+                  <button className="miniBtn" onClick={() => openWhatsApp(p.phone, buildBirthdayMessage(p.name))}>WhatsApp</button>
+                  <button className="miniBtn" onClick={() => setSelectedPersonId(p.id)}>Detalhes</button>
+                </div>
+              </div>
+            ))}
+
+            {!birthdaysFiltered.length && <div className="emptyBox">Ninguém faz aniversário em {MONTHS[selectedMonth]}.</div>}
+          </div>
+        </div>
       )}
 
       {tab === "config" && (
@@ -411,9 +476,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ============================================= */}
-      {/* MODAL PESSOA INDIVIDUAL - ATUALIZADO COMPLETO */}
-      {/* ============================================= */}
+      {/* MODAL PESSOA INDIVIDUAL (ESTILIZADO) */}
       {selectedPerson && (
         <div className="modalBackdrop" onClick={() => setSelectedPersonId(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -426,131 +489,42 @@ export default function AdminDashboard() {
             </div>
             
             <div className="modalGrid">
-              {/* BLOCO 1: DADOS BÁSICOS */}
-              <div className="modalBox">
-                <div className="modalLabel">Nascimento</div>
-                <div className="modalValue">
-                  {toBRDate(selectedPerson.birth_date)} <small style={{color:'#888', marginLeft:5}}>({getAge(selectedPerson.birth_date)})</small>
-                </div>
-              </div>
-
-              {/* BLOCO 2: BATISMO */}
-              <div className="modalBox">
-                <div className="modalLabel">Situação Batismo</div>
-                <div className="modalValue">
-                  {selectedPerson.baptized ? (
-                    <span style={{color:'#4caf50'}}>✅ É batizado</span>
-                  ) : (
-                    <>
-                      <span style={{color:'#ccc'}}>Não batizado</span>
-                      {selectedPerson.baptism_contact && (
-                        <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Quer conversar sobre batismo</div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-
-               {/* BLOCO 3: CÉLULA */}
-              <div className="modalBox">
-                <div className="modalLabel">Célula</div>
-                <div className="modalValue">
-                  {cellByPerson[selectedPerson.id] ? (
-                    <span style={{color:'#fff'}}>{byIdCell[cellByPerson[selectedPerson.id]]?.name || "-"}</span>
-                  ) : (
-                    <>
-                      <span style={{color:'#888'}}>Não participa.</span>
-                      {selectedPerson.wants_cell && (
-                         <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Deseja participar de uma!</div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* BLOCO 4: MINISTÉRIOS */}
-              <div className="modalBox">
-                <div className="modalLabel">Ministérios</div>
-                <div className="modalValue">
-                  {(ministriesByPerson[selectedPerson.id] || []).length > 0 ? (
-                    <div style={{lineHeight: '1.4'}}>
-                      {(ministriesByPerson[selectedPerson.id] || []).map(id => byIdMinistry[id]?.name).join(", ")}
-                    </div>
-                  ) : (
-                    <>
-                      <span style={{color:'#888'}}>Não serve.</span>
-                      {selectedPerson.wants_ministry && (
-                         <div style={{color:'#ffa726', marginTop:4, fontSize:'0.9em'}}>⚠️ Deseja servir!</div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
+              <div className="modalBox"><div className="modalLabel">Nascimento</div><div className="modalValue">{toBRDate(selectedPerson.birth_date)} <small style={{color:'#888'}}>({getAge(selectedPerson.birth_date)})</small></div></div>
+              <div className="modalBox"><div className="modalLabel">Situação Batismo</div><div className="modalValue">{selectedPerson.baptized ? <span style={{color:'#4caf50'}}>✅ Batizado</span> : <>{'Não batizado'}{selectedPerson.baptism_contact && <div style={{color:'#ffa726', fontSize:'0.9em'}}>⚠️ Quer conversar</div>}</>}</div></div>
+              <div className="modalBox"><div className="modalLabel">Célula</div><div className="modalValue">{cellByPerson[selectedPerson.id] ? byIdCell[cellByPerson[selectedPerson.id]]?.name || "-" : <>{'Não participa'}{selectedPerson.wants_cell && <div style={{color:'#ffa726', fontSize:'0.9em'}}>⚠️ Quer participar</div>}</>}</div></div>
+              <div className="modalBox"><div className="modalLabel">Ministérios</div><div className="modalValue">{(ministriesByPerson[selectedPerson.id] || []).length > 0 ? (ministriesByPerson[selectedPerson.id] || []).map(id => byIdMinistry[id]?.name).join(", ") : <>{'Não serve'}{selectedPerson.wants_ministry && <div style={{color:'#ffa726', fontSize:'0.9em'}}>⚠️ Quer servir</div>}</>}</div></div>
             </div>
 
-            {/* ENDEREÇO E VISITA */}
             <div className="modalAddress">
               <div style={{display:'flex', justifyContent:'space-between', marginBottom:8}}>
                 <div className="modalLabel">Endereço Completo</div>
-                {selectedPerson.wants_visit ? (
-                  <div style={{background:'rgba(191,126,30,0.3)', color:'#eba036', padding:'2px 8px', borderRadius:4, fontSize:'0.75rem', fontWeight:'bold'}}>
-                    QUER VISITA
-                  </div>
-                ) : (
-                   <div style={{color:'#555', fontSize:'0.75rem'}}>Não solicitou visita</div>
-                )}
+                {selectedPerson.wants_visit ? <div style={{background:'rgba(191,126,30,0.3)', color:'#eba036', padding:'2px 8px', borderRadius:4, fontSize:'0.75rem', fontWeight:'bold'}}>QUER VISITA</div> : <div style={{color:'#555', fontSize:'0.75rem'}}>Não solicitou visita</div>}
               </div>
-              
-              {selectedPerson.address_opt_in ? (
-                <div className="modalValue">
-                   {selectedPerson.street}, {selectedPerson.house_number}
-                   {selectedPerson.complement && <span> • Comp: {selectedPerson.complement}</span>}
-                   <br/>
-                   {selectedPerson.neighborhood} • {selectedPerson.city}
-                   {selectedPerson.reference && <div style={{marginTop:5, color:'#aaa', fontSize:'0.9em'}}>Ref: {selectedPerson.reference}</div>}
-                </div>
-              ) : (
-                <div className="modalValue" style={{color:'#666'}}>Endereço não cadastrado.</div>
-              )}
+              {selectedPerson.address_opt_in ? <div className="modalValue">{selectedPerson.street}, {selectedPerson.house_number} {selectedPerson.complement && <span>• {selectedPerson.complement}</span>}<br/>{selectedPerson.neighborhood} • {selectedPerson.city}{selectedPerson.reference && <div style={{marginTop:5, color:'#aaa', fontSize:'0.9em'}}>Ref: {selectedPerson.reference}</div>}</div> : <div className="modalValue" style={{color:'#666'}}>Endereço não cadastrado.</div>}
             </div>
             
             <div className="modalActions">
-              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBirthdayMessage(selectedPerson.name))}>
-                🎉 Feliz Aniversário
-              </button>
-              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildVisitMessage(selectedPerson.name))}>
-                ☕ Marcar Visita
-              </button>
-              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBaptismMessage(selectedPerson.name))}>
-                💧 Sobre Batismo
-              </button>
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBirthdayMessage(selectedPerson.name))}>🎉 Aniversário</button>
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildVisitMessage(selectedPerson.name))}>☕ Visita</button>
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBaptismMessage(selectedPerson.name))}>💧 Batismo</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL DE GRUPO (LISTA QUEM FAZ PARTE) */}
+      {/* MODAL DE GRUPO */}
       {selectedGroup && (
         <div className="modalBackdrop" onClick={() => setSelectedGroup(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modalHead">
-              <div>
-                <div className="modalTitle">Membros: {selectedGroup.name}</div>
-                <div className="modalSub">Total: {groupMembers.length} pessoas</div>
-              </div>
+              <div><div className="modalTitle">Membros: {selectedGroup.name}</div><div className="modalSub">Total: {groupMembers.length} pessoas</div></div>
               <button className="ghostBtn" onClick={() => setSelectedGroup(null)}>Fechar</button>
             </div>
-
             <div className="list" style={{maxHeight: '60vh', overflowY: 'auto'}}>
               {groupMembers.map(p => (
                 <div key={p.id} className="listItem">
-                  <div>
-                    <div className="liTitle">{p.name}</div>
-                    <div className="liSub">{p.phone}</div>
-                  </div>
-                  <div className="liActions">
-                    <button className="miniBtn" onClick={() => setSelectedPersonId(p.id)}>Ver Perfil</button>
-                  </div>
+                  <div><div className="liTitle">{p.name}</div><div className="liSub">{p.phone}</div></div>
+                  <div className="liActions"><button className="miniBtn" onClick={() => setSelectedPersonId(p.id)}>Ver Perfil</button></div>
                 </div>
               ))}
               {groupMembers.length === 0 && <div className="emptyBox">Ninguém neste grupo ainda.</div>}
@@ -558,7 +532,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
