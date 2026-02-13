@@ -88,8 +88,8 @@ export default function AdminDashboard() {
   // Modais
   const [selectedPersonId, setSelectedPersonId] = useState(null);
   
-  // NOVO: Estado para abrir modal de grupo (Zona, Célula ou Ministério)
-  const [selectedGroup, setSelectedGroup] = useState(null); // { type: 'zone'|'cell'|'ministry', id, name }
+  // Estado para abrir modal de grupo (Zona, Célula ou Ministério)
+  const [selectedGroup, setSelectedGroup] = useState(null); 
 
   // Inputs Config
   const [newMinistry, setNewMinistry] = useState("");
@@ -183,7 +183,6 @@ export default function AdminDashboard() {
     return map;
   }, [people, cellByPerson]);
 
-  // NOVO: Contagem por ministério
   const countByMinistry = useMemo(() => {
     const map = {};
     for (const row of peopleMinistries) {
@@ -195,20 +194,10 @@ export default function AdminDashboard() {
   // ====== LOGICA DO MODAL DE GRUPO ======
   const groupMembers = useMemo(() => {
     if (!selectedGroup) return [];
-    
-    // Lista de Zona
-    if (selectedGroup.type === 'zone') {
-      return people.filter(p => p.zone === selectedGroup.name);
-    }
-    // Lista de Célula
-    if (selectedGroup.type === 'cell') {
-      return people.filter(p => cellByPerson[p.id] === selectedGroup.id);
-    }
-    // Lista de Ministério
+    if (selectedGroup.type === 'zone') return people.filter(p => p.zone === selectedGroup.name);
+    if (selectedGroup.type === 'cell') return people.filter(p => cellByPerson[p.id] === selectedGroup.id);
     if (selectedGroup.type === 'ministry') {
-      const pIds = peopleMinistries
-        .filter(pm => pm.ministry_id === selectedGroup.id)
-        .map(pm => pm.person_id);
+      const pIds = peopleMinistries.filter(pm => pm.ministry_id === selectedGroup.id).map(pm => pm.person_id);
       return people.filter(p => pIds.includes(p.id));
     }
     return [];
@@ -319,7 +308,7 @@ export default function AdminDashboard() {
 
           <div className="grid2">
              <div className="panel">
-                <div className="panelHead"><div className="panelTitle">Por Célula (toque para ver)</div></div>
+                <div className="panelHead"><div className="panelTitle">Por Célula</div></div>
                 <div className="zoneGrid compactGrid">
                   {cells.map((c) => (
                     <div key={c.id} className="zoneItem clickable" onClick={() => setSelectedGroup({ type: 'cell', name: c.name, id: c.id })}>
@@ -329,10 +318,8 @@ export default function AdminDashboard() {
                   ))}
                 </div>
              </div>
-
-             {/* NOVO PAINEL DE MINISTÉRIOS */}
              <div className="panel">
-                <div className="panelHead"><div className="panelTitle">Por Ministério (toque para ver)</div></div>
+                <div className="panelHead"><div className="panelTitle">Por Ministério</div></div>
                 <div className="zoneGrid compactGrid">
                   {ministries.map((m) => (
                     <div key={m.id} className="zoneItem clickable" onClick={() => setSelectedGroup({ type: 'ministry', name: m.name, id: m.id })}>
@@ -346,7 +333,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* OUTRAS ABAS (MANTIDAS IGUAIS, APENAS RESUMIDAS NO RENDER) */}
+      {/* PESSOAS */}
       {tab === "pessoas" && (
         <div className="panel">
           <div className="panelHead row">
@@ -412,7 +399,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* MODAL PESSOA INDIVIDUAL */}
+      {/* MODAL PESSOA INDIVIDUAL - COM OS BOTÕES DE VOLTA! */}
       {selectedPerson && (
         <div className="modalBackdrop" onClick={() => setSelectedPersonId(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -422,12 +409,24 @@ export default function AdminDashboard() {
                <div className="modalBox"><div className="modalLabel">Ministérios</div><div className="modalValue">{(ministriesByPerson[selectedPerson.id] || []).map(id => byIdMinistry[id]?.name).join(", ") || "-"}</div></div>
             </div>
             <div className="modalAddress"><div className="modalLabel">Endereço</div><div className="modalValue">{selectedPerson.street ? `${selectedPerson.street}, ${selectedPerson.house_number} - ${selectedPerson.neighborhood}` : "Sem endereço"}</div></div>
-            <div className="modalActions"><button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildVisitMessage(selectedPerson.name))}>Chamar no Zap</button></div>
+            
+            {/* AQUI ESTÃO ELES DE VOLTA 👇 */}
+            <div className="modalActions">
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBirthdayMessage(selectedPerson.name))}>
+                🎉 Feliz Aniversário
+              </button>
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildVisitMessage(selectedPerson.name))}>
+                ☕ Marcar Visita
+              </button>
+              <button className="goldBtn" onClick={() => openWhatsApp(selectedPerson.phone, buildBaptismMessage(selectedPerson.name))}>
+                💧 Sobre Batismo
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* NOVO MODAL DE GRUPO (LISTA QUEM FAZ PARTE) */}
+      {/* MODAL DE GRUPO (LISTA QUEM FAZ PARTE) */}
       {selectedGroup && (
         <div className="modalBackdrop" onClick={() => setSelectedGroup(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
