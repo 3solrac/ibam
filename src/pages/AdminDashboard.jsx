@@ -4,7 +4,7 @@ import "./admin.css";
 
 const ZONES = [
   "Zona Norte",
-  "Zona Sul,
+  "Zona Sul",
   "Zona Leste",
   "Zona Oeste",
   "Centro",
