@@ -26,7 +26,7 @@
   --shadow-glow: 0 8px 25px rgba(191, 126, 30, 0.25);
 }
 
-/* O Segredo pro Dark Mode perfeito em Inputs e Calendários nativos */
+/* O Segredo pro Dark Mode perfeito no HTML base do painel */
 html {
   color-scheme: dark;
 }
@@ -95,7 +95,7 @@ html {
   border: 1px solid var(--stroke);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
-  border-radius: 99px; /* Formato pílula */
+  border-radius: 99px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -152,7 +152,7 @@ html {
 .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 
 /* =========================
-   CARDS GERAIS
+   CARDS GERAIS E PAINÉIS
    ========================= */
 .cards {
   display: grid;
@@ -173,9 +173,6 @@ html {
 .cardLabel { color: var(--muted); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;}
 .cardValue { margin-top: 10px; font-size: 36px; font-weight: 900; color: var(--text); }
 
-/* =========================
-   PAINÉIS E GRIDS
-   ========================= */
 .panel {
   background: var(--panel);
   border: 1px solid var(--stroke);
@@ -222,7 +219,7 @@ html {
 .zoneCount { margin-top: 8px; font-weight: 900; font-size: 24px; color: var(--text); }
 
 /* =========================
-   TABELAS (PESSOAS)
+   TABELAS E LISTAS
    ========================= */
 .tableWrap {
   overflow-x: auto;
@@ -231,44 +228,16 @@ html {
   background: rgba(0, 0, 0, 0.3);
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px; /* Força scroll no celular */
-  text-align: left;
-}
-
-.table th {
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-  font-weight: 800;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--stroke);
-}
-
-.table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  font-size: 14px;
-}
-
+.table { width: 100%; border-collapse: collapse; min-width: 800px; text-align: left; }
+.table th { padding: 14px 16px; background: rgba(255, 255, 255, 0.03); color: var(--muted); font-weight: 800; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--stroke); }
+.table td { padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); color: var(--text); font-size: 14px; }
 .table tr:hover td { background: rgba(255, 255, 255, 0.02); }
 .tdStrong { font-weight: 800; color: #fff; }
 .tdWrap { max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tdRight { text-align: right; }
 
-/* =========================
-   LISTAS (FILAS E MODAIS)
-   ========================= */
 .list { display: flex; flex-direction: column; gap: 10px; }
-.listItem {
-  display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  padding: 14px; border-radius: 16px; border: 1px solid var(--stroke); background: var(--panel2);
-}
+.listItem { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; border: 1px solid var(--stroke); background: var(--panel2); }
 .liTitle { font-weight: 800; font-size: 15px; color: var(--text); }
 .liSub { margin-top: 5px; font-size: 13px; color: var(--muted); }
 .liActions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -276,38 +245,84 @@ html {
 /* =========================
    BARRA DE MESES (ANIVERSÁRIOS)
    ========================= */
-.monthSelector {
-  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px;
-  margin-bottom: 20px; border-bottom: 1px solid var(--stroke);
-}
-.monthBtn {
-  background: var(--panel2); border: 1px solid var(--stroke); color: var(--muted);
-  padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer;
-  white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.2s;
-}
+.monthSelector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--stroke); }
+.monthBtn { background: var(--panel2); border: 1px solid var(--stroke); color: var(--muted); padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
 .monthBtn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
-.monthBtn.active {
-  background: rgba(191, 126, 30, 0.2); border-color: var(--amber); color: #fff;
-}
-.monthCount {
-  font-size: 11px; background: rgba(0, 0, 0, 0.4); padding: 3px 8px;
-  border-radius: 99px; color: rgba(255, 255, 255, 0.8);
-}
+.monthBtn.active { background: rgba(191, 126, 30, 0.2); border-color: var(--amber); color: #fff; }
+.monthCount { font-size: 11px; background: rgba(0, 0, 0, 0.4); padding: 3px 8px; border-radius: 99px; color: rgba(255, 255, 255, 0.8); }
 .monthBtn.active .monthCount { background: var(--amber); color: #111; font-weight: 900;}
 
 /* =========================
-   INPUTS DE TEXTO (CONFIG)
+   BLINDAGEM DOS INPUTS (O FIM DOS CLARÕES BRANCOS)
    ========================= */
 .addRow { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-.textInput {
-  flex: 1; min-width: 200px; padding: 12px 16px; border-radius: var(--radius-sm);
-  border: 1px solid var(--stroke); background: rgba(0, 0, 0, 0.4);
-  color: #fff; font-weight: 600; font-size: 14px; outline: none; transition: 0.2s;
-}
-.textInput:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(191, 126, 30, 0.2); }
-.textInput::placeholder { color: rgba(255, 255, 255, 0.3); }
 
-/* Config Lists */
+/* Força o fundo escuro em ABSOLUTAMENTE TODOS os inputs e selects do admin e modais */
+.dashPage input,
+.dashPage select,
+.dashPage textarea,
+.modalBackdrop input,
+.modalBackdrop select,
+.modalBackdrop textarea,
+.textInput {
+  background-color: #121212 !important; /* Escuro profundo */
+  color: #ffffff !important;            /* Texto branco brilhante */
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 12px 16px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+  width: 100%; /* Garante que ocupem o espaço certo */
+  box-sizing: border-box;
+}
+
+/* Efeito de foco (quando clica pra digitar) */
+.dashPage input:focus,
+.dashPage select:focus,
+.dashPage textarea:focus,
+.modalBackdrop input:focus,
+.modalBackdrop select:focus,
+.modalBackdrop textarea:focus,
+.textInput:focus {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 3px rgba(191, 126, 30, 0.25) !important;
+  background-color: #000000 !important;
+}
+
+/* Corrigindo os Placeholders (texto de exemplo) */
+.dashPage input::placeholder,
+.dashPage textarea::placeholder,
+.modalBackdrop input::placeholder,
+.modalBackdrop textarea::placeholder,
+.textInput::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+  opacity: 1 !important;
+}
+
+/* Força os calendários (input date) a ficarem no modo noturno e inverte a cor do ícone */
+input[type="date"], input[type="time"], input[type="datetime-local"] {
+  color-scheme: dark !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7) !important;
+  cursor: pointer;
+}
+
+/* Checkboxes (mantém pequeno e arrumado) */
+.dashPage input[type="checkbox"],
+.modalBackdrop input[type="checkbox"] {
+  width: auto !important;
+  accent-color: var(--amber) !important;
+  cursor: pointer;
+}
+
+/* =========================
+   LISTAS CONFIG COMPACTAS
+   ========================= */
 .listCompact { display: flex; flex-direction: column; gap: 8px; }
 .compactItem { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--panel2); border: 1px solid var(--stroke); }
 .compactName { font-weight: 700; font-size: 14px; }
