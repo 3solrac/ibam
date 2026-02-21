@@ -1069,15 +1069,16 @@ export default function AdminDashboard() {
             />
             <input
               className="textInput"
+              type="date"
               value={eventForm.start_date}
               onChange={(e) => setEventForm((p) => ({ ...p, start_date: e.target.value }))}
-              placeholder="Data início (YYYY-MM-DD)"
             />
             <input
               className="textInput"
+              type="date"
               value={eventForm.end_date}
               onChange={(e) => setEventForm((p) => ({ ...p, end_date: e.target.value }))}
-              placeholder="Data fim (opcional) (YYYY-MM-DD)"
+              placeholder="Data de fim (opcional)"
             />
             <input
               className="textInput"
