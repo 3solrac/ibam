@@ -185,3 +185,52 @@
   background: rgba(0,0,0,0.2);
   color: #fff;
 }
+
+/* ===== FIX: textos invisíveis nos cards/painéis ===== */
+.cards .card,
+.panel,
+.modal,
+.table,
+.listItem,
+.compactItem {
+  color: #111 !important; /* garante texto escuro */
+}
+
+.cardLabel,
+.panelTitle,
+.modalLabel,
+.dashSub,
+.liSub,
+.compactName {
+  color: #444 !important;
+}
+
+.cardValue,
+.liTitle,
+.modalTitle,
+.dashTitle {
+  color: #111 !important;
+  font-weight: 800;
+}
+
+/* Se algum blur/overlay estiver “lavando” o texto */
+.card,
+.panel {
+  background: #fff !important;
+}
+
+/* Só pra garantir contraste nas abas */
+.tab {
+  color: #eaeaea;
+}
+.tab.active {
+  color: #111;
+}
+
+/* Tabelas: garante contraste */
+.table th {
+  color: #333 !important;
+}
+.table td {
+  color: #111 !important;
+}
