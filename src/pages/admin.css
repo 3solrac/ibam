@@ -274,3 +274,55 @@
   .cards{ grid-template-columns: 1fr; }
   .zoneGrid{ grid-template-columns: repeat(2, 1fr); }
 }
+
+/* =========================
+   PATCH FINAL — REMOVE BRANCO
+   ========================= */
+
+/* GARANTE que NADA no dashboard force branco */
+.dashPage *,
+.dashPage *::before,
+.dashPage *::after {
+  background-color: unset;
+}
+
+/* Cards do topo */
+.cards .card {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+}
+
+/* Painéis grandes */
+.panel {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+}
+
+/* Zona / Célula / Ministério */
+.zoneItem {
+  background: var(--panel2) !important;
+  color: var(--text) !important;
+}
+
+/* Texto interno (evita “invisível”) */
+.cardLabel,
+.zoneName,
+.liSub,
+.dashSub {
+  color: var(--muted) !important;
+}
+
+.cardValue,
+.zoneCount,
+.liTitle,
+.panelTitle {
+  color: var(--text) !important;
+}
+
+/* Se algum browser estiver forçando branco via shadow DOM */
+.card,
+.panel,
+.zoneItem {
+  filter: none !important;
+  opacity: 1 !important;
+}
