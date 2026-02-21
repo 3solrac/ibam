@@ -326,3 +326,97 @@
   filter: none !important;
   opacity: 1 !important;
 }
+
+/* =========================
+   INPUTS / SELECT / TEXTAREA — DARK FIX (PC + Mobile)
+   ========================= */
+
+.dashPage input,
+.dashPage select,
+.dashPage textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--stroke) !important;
+  background: rgba(0,0,0,0.45) !important;
+  color: var(--text) !important;
+
+  border-radius: 14px !important;
+  padding: 12px 14px !important;
+
+  font-weight: 800 !important;
+  outline: none !important;
+
+  box-shadow: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Placeholder */
+.dashPage input::placeholder,
+.dashPage textarea::placeholder {
+  color: rgba(255,255,255,0.45) !important;
+  opacity: 1 !important;
+}
+
+/* Focus (bonito e claro) */
+.dashPage input:focus,
+.dashPage select:focus,
+.dashPage textarea:focus {
+  border-color: rgba(191,126,30,0.75) !important;
+  box-shadow: 0 0 0 3px rgba(191,126,30,0.18) !important;
+}
+
+/* Remove autofill branco/azulado do Chrome */
+.dashPage input:-webkit-autofill,
+.dashPage textarea:-webkit-autofill,
+.dashPage select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text) !important;
+  box-shadow: 0 0 0px 1000px rgba(0,0,0,0.65) inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* Ícones nativos de date/time no Chrome/Safari (deixa visível no dark) */
+.dashPage input[type="date"],
+.dashPage input[type="time"] {
+  color-scheme: dark;              /* MUITO importante */
+  background: rgba(0,0,0,0.45) !important;
+}
+
+/* Calendário/relógio: ícone */
+.dashPage input[type="date"]::-webkit-calendar-picker-indicator,
+.dashPage input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* Texto interno do date/time (Safari/Chrome) */
+.dashPage input[type="date"]::-webkit-datetime-edit,
+.dashPage input[type="time"]::-webkit-datetime-edit {
+  color: var(--text) !important;
+}
+
+/* Parte do placeholder do date/time (quando vazio) */
+.dashPage input[type="date"]::-webkit-datetime-edit-text,
+.dashPage input[type="date"]::-webkit-datetime-edit-month-field,
+.dashPage input[type="date"]::-webkit-datetime-edit-day-field,
+.dashPage input[type="date"]::-webkit-datetime-edit-year-field,
+.dashPage input[type="time"]::-webkit-datetime-edit-text,
+.dashPage input[type="time"]::-webkit-datetime-edit-hour-field,
+.dashPage input[type="time"]::-webkit-datetime-edit-minute-field {
+  color: var(--text) !important;
+  opacity: 0.92;
+}
+
+/* Checkbox fica ok no dark */
+.dashPage input[type="checkbox"]{
+  width: auto;
+  accent-color: var(--amber);
+  background: transparent !important;
+}
+
+/* Botões do form (quando tiver) não herdam "appearance" estranho */
+.dashPage button{
+  appearance: none;
+  -webkit-appearance: none;
+}
