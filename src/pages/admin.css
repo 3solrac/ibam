@@ -376,3 +376,63 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   .modalActions .goldBtn { width: 100%; text-align: center; }
   .liActions { width: 100%; justify-content: flex-end; }
 }
+
+/* =========================================
+   🛡️ BLINDAGEM MÁXIMA ANTI-VAZAMENTO 🛡️
+   Garante que o CSS do Cadastro não deixe 
+   as coisas brancas dentro do Dashboard
+   ========================================= */
+
+/* 1. Força os Cards (Cadastrados, Visitas, etc) a ficarem escuros */
+body .dashPage .card {
+  background: rgba(20, 20, 22, 0.65) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body .dashPage .card .cardLabel { 
+  color: rgba(255, 255, 255, 0.6) !important; 
+}
+body .dashPage .card .cardValue { 
+  color: #ffffff !important; 
+}
+
+/* 2. Força TODOS os campos de texto (inclusive os da sua Agenda) a ficarem escuros */
+body .dashPage input,
+body .dashPage select,
+body .dashPage textarea,
+body .modalBackdrop input,
+body .modalBackdrop select,
+body .modalBackdrop textarea {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 3. Força a cor certa quando você clica para digitar (Focus) */
+body .dashPage input:focus,
+body .dashPage select:focus,
+body .dashPage textarea:focus,
+body .modalBackdrop input:focus,
+body .modalBackdrop select:focus,
+body .modalBackdrop textarea:focus {
+  background-color: #000000 !important;
+  border-color: #bf7e1e !important;
+  box-shadow: 0 0 0 3px rgba(191, 126, 30, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* 4. Arruma os textos de "Exemplo" (Placeholder) para não ficarem invisíveis */
+body .dashPage input::placeholder,
+body .dashPage textarea::placeholder,
+body .modalBackdrop input::placeholder,
+body .modalBackdrop textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+/* 5. Mantém os checkboxes no padrão */
+body .dashPage input[type="checkbox"] {
+  width: auto !important;
+  background-color: transparent !important;
+  accent-color: #bf7e1e !important;
+}
