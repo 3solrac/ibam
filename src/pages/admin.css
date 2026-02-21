@@ -234,3 +234,63 @@
 .table td {
   color: #111 !important;
 }
+
+/* ===== PATCH 2: desfaz o “trollei o topo” e melhora Zona/Célula/Ministério ===== */
+
+/* Topbar é escura → texto tem que ser claro */
+.dashTopBar,
+.dashTitle,
+.dashSub {
+  color: #fff !important;
+}
+
+.dashSub {
+  opacity: 0.85 !important;
+}
+
+/* Abas: mantém legível no fundo escuro */
+.tab { 
+  color: rgba(255,255,255,0.9) !important;
+}
+.tab.active { 
+  color: #111 !important;
+}
+
+/* Painéis e cards: texto escuro só DENTRO deles (sem afetar o topo) */
+.cards .card *,
+.panel * {
+  color: inherit;
+}
+
+/* Reforça o contraste dentro dos cards/panéis */
+.cards .card { 
+  color: #111 !important;
+}
+.panel {
+  color: #111 !important;
+}
+
+/* “Zona grid” (onde os nomes estavam quase invisíveis) */
+.zoneItem {
+  background: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.zoneName {
+  color: #666 !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+.zoneCount {
+  color: #111 !important;
+  opacity: 1 !important;
+  font-weight: 900 !important;
+}
+
+/* Se seu CSS antigo estiver aplicando blur/opacity no conteúdo */
+.zoneGrid,
+.compactGrid {
+  opacity: 1 !important;
+  filter: none !important;
+}
