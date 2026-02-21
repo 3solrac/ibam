@@ -118,7 +118,7 @@ export default function AdminLogin() {
           {msg.text && <div className={`adminMsg ${msg.type}`}>{msg.text}</div>}
 
           <div className="adminFooterNote">
-            Uso restrito. Se você não for da liderança, volte para o cadastro de membros.
+            Uso restrito. Se você não for da liderança, volte para a página inicial.
           </div>
 
           <button
@@ -126,7 +126,7 @@ export default function AdminLogin() {
             className="adminBack"
             onClick={() => navigate("/", { replace: true })}
           >
-            ← Voltar ao cadastro
+            ← Voltar para o início
           </button>
         </form>
       </div>
